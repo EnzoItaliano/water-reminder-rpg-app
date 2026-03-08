@@ -4,9 +4,11 @@ import { useGame } from '../context/GameContext';
 import { PixelText } from '../components/PixelText';
 import { ActionBtn, SmallBtn } from '../components/Buttons';
 import { Bar } from '../components/Bar';
+import { useTranslation } from 'react-i18next';
 import { MonsterSprite } from '../components/MonsterSprite';
 
 export default function HomeScreen({ navigation }) {
+    const { t } = useTranslation();
     const { stats, startSession, drinkWater, resetToIdle, endSession, availableMonsters } = useGame();
     const session = stats.currentSession;
 
@@ -117,19 +119,19 @@ export default function HomeScreen({ navigation }) {
                 </View>
 
                 <View style={styles.statsRow}>
-                    <PixelText>TIME LEFT</PixelText>
+                    <PixelText>{t('home.timeLeft')}</PixelText>
                     <PixelText size={14} style={{ marginVertical: 5 }}>{minutesLeft}:{secondsLeft.toString().padStart(2, '0')}</PixelText>
                     <Bar percentage={timePercent} color="#3498db" />
                 </View>
 
                 <View style={styles.statsRow}>
-                    <PixelText>WATER DRANK</PixelText>
-                    <PixelText size={14} style={{ marginVertical: 5 }}>{session.cupsDrank} / {session.totalCups} Cups</PixelText>
+                    <PixelText>{t('home.waterDrank')}</PixelText>
+                    <PixelText size={14} style={{ marginVertical: 5 }}>{t('home.cupsProgress', { drank: session.cupsDrank, total: session.totalCups })}</PixelText>
                     <Bar percentage={waterPercent} color="#00cec9" />
                 </View>
 
-                <ActionBtn title="🥤 DRINK WATER" onPress={drinkWater} color="#3498db" borderColor="#2980b9" />
-                <SmallBtn title="🏳️ GIVE UP" onPress={() => endSession('lost')} />
+                <ActionBtn title={t('home.drinkWater')} onPress={drinkWater} color="#3498db" borderColor="#2980b9" />
+                <SmallBtn title={t('home.giveUp')} onPress={() => endSession('lost')} />
                 {/* Note: endSession('lost') records a loss and clears alarms, matching the extension logic */}
             </ScrollView>
         );
@@ -140,12 +142,12 @@ export default function HomeScreen({ navigation }) {
         return (
             <View style={[styles.container, { justifyContent: 'center' }]}>
                 <PixelText size={16} color={isWon ? "#f1c40f" : "#c0392b"} style={{ marginBottom: 20, textAlign: 'center' }}>
-                    {isWon ? "VICTORY!" : "DEFEAT"}
+                    {isWon ? t('home.victory') : t('home.defeat')}
                 </PixelText>
                 <PixelText style={{ textAlign: 'center', color: '#aaa', marginBottom: 20 }}>
-                    {isWon ? "You defeated the monster!" : "The monster escaped..."}
+                    {isWon ? t('home.victoryMsg') : t('home.defeatMsg')}
                 </PixelText>
-                <ActionBtn title={isWon ? "CLAIM TROPHY" : "TRY AGAIN"} onPress={resetToIdle} />
+                <ActionBtn title={isWon ? t('home.claimTrophy') : t('home.tryAgain')} onPress={resetToIdle} />
             </View>
         );
     }
@@ -155,12 +157,12 @@ export default function HomeScreen({ navigation }) {
 
     return (
         <ScrollView contentContainerStyle={styles.container}>
-            <PixelText style={{ textAlign: 'center', marginBottom: 20, color: '#44bd32' }}>START SESSION</PixelText>
+            <PixelText style={{ textAlign: 'center', marginBottom: 20, color: '#44bd32' }}>{t('home.startSession')}</PixelText>
 
             <View style={styles.groupContainer}>
                 <View style={{ marginBottom: 10 }}>
                     <PixelText size={8} color="#bdc3c7">
-                        WATER GOAL (Liters)
+                        {t('home.waterGoal')}
                     </PixelText>
                 </View>
                 <View style={styles.durationChooser}>
@@ -193,10 +195,10 @@ export default function HomeScreen({ navigation }) {
             <View style={styles.groupContainer}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
                     <PixelText size={8} color="#bdc3c7" style={{ marginBottom: 0 }}>
-                        {inputMode === 'duration' ? 'DURATION (Hours)' : 'END TIME'}
+                        {inputMode === 'duration' ? t('home.durationHours') : t('home.endTime')}
                     </PixelText>
                     <SmallBtn
-                        title="SWITCH"
+                        title={t('home.switch')}
                         onPress={() => setInputMode(prev => prev === 'duration' ? 'endTime' : 'duration')}
                     />
                 </View>
@@ -218,12 +220,12 @@ export default function HomeScreen({ navigation }) {
             </View>
 
             <View style={styles.infoRow}>
-                <PixelText>Cups: <PixelText color="#f1c40f">{cups}</PixelText></PixelText>
-                <PixelText>Diff: <PixelText color="#f1c40f">{difficulty}</PixelText></PixelText>
+                <PixelText>{t('home.cups')} <PixelText color="#f1c40f">{cups}</PixelText></PixelText>
+                <PixelText>{t('home.diff')} <PixelText color="#f1c40f">{difficulty}</PixelText></PixelText>
             </View>
 
             <ActionBtn
-                title="⚔️ FIGHT MONSTER"
+                title={t('home.fightMonster')}
                 onPress={() => startSession(lVal, hVal * 60, displayedMonster.id)}
             />
         </ScrollView>

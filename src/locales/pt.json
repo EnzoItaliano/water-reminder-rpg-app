@@ -1,0 +1,50 @@
+{
+  "tabs": {
+    "home": "INÍCIO",
+    "trophies": "TROFÉUS",
+    "store": "LOJA",
+    "config": "CONFIG",
+    "title_home": "WATER RPG",
+    "title_trophies": "TROFÉUS",
+    "title_store": "LOJA",
+    "title_config": "CONFIGURAÇÕES"
+  },
+  "home": {
+    "timeLeft": "TEMPO RESTANTE",
+    "waterDrank": "ÁGUA BEBIDA",
+    "cups": "Copos",
+    "drinkWater": "🥤 BEBER ÁGUA",
+    "giveUp": "🏳️ DESISTIR",
+    "victory": "VITÓRIA!",
+    "defeat": "DERROTA",
+    "victoryMsg": "Você derrotou o monstro!",
+    "defeatMsg": "O monstro escapou...",
+    "claimTrophy": "RESGATAR TROFÉU",
+    "tryAgain": "TENTAR NOVAMENTE",
+    "startSession": "INICIAR SESSÃO",
+    "waterGoal": "META DE ÁGUA (Litros)",
+    "durationHours": "DURAÇÃO (Horas)",
+    "endTime": "HORA FIM",
+    "switch": "TROCAR",
+    "diff": "Dif",
+    "fightMonster": "⚔️ LUTAR COM MONSTRO",
+    "cupsProgress": "{{drank}} / {{total}} Copos"
+  },
+  "store": {
+    "title": "💰 LOJA DE MONSTROS 💰",
+    "gold": "OURO",
+    "buy": "COMPRAR",
+    "needGold": "FALTA OURO",
+    "comingSoon": "Em Breve",
+    "locked": "BLOQUEADO"
+  },
+  "trophies": {
+    "title": "🏆 HALL DA FAMA 🏆",
+    "wins": "Vitórias:"
+  },
+  "config": {
+    "cupSize": "TAMANHO DO COPO (ML)",
+    "cupSizeDesc": "Este tamanho é usado para calcular quantos copos você precisa beber para atingir sua meta diária.",
+    "language": "IDIOMA"
+  }
+}

@@ -3,8 +3,10 @@ import { View, ScrollView, StyleSheet, TouchableOpacity, Image } from 'react-nat
 import { useGame } from '../context/GameContext';
 import { PixelText } from '../components/PixelText';
 import { getMonsterImage } from '../utils/images';
+import { useTranslation } from 'react-i18next';
 
 export default function StoreScreen() {
+    const { t } = useTranslation();
     const { stats, availableMonsters, buyMonster } = useGame();
     const unlocked = stats.unlockedMonsters || [];
     const gold = stats.gold || 0;
@@ -14,10 +16,10 @@ export default function StoreScreen() {
     return (
         <ScrollView contentContainerStyle={styles.container}>
             <PixelText size={16} color="#f1c40f" style={{ textAlign: 'center', marginBottom: 10 }}>
-                💰 MONSTER SHOP 💰
+                {t('store.title')}
             </PixelText>
             <PixelText style={{ textAlign: 'center', marginBottom: 20 }}>
-                GOLD: <PixelText color="#f1c40f">{gold}</PixelText>
+                {t('store.gold')}: <PixelText color="#f1c40f">{gold}</PixelText>
             </PixelText>
 
             <View style={styles.grid}>
@@ -37,7 +39,7 @@ export default function StoreScreen() {
                                 disabled={!canAfford}
                                 style={[styles.btn, { backgroundColor: canAfford ? '#f1c40f' : '#7f8c8d' }]}
                             >
-                                <PixelText size={8} color="black">{canAfford ? 'BUY' : 'NEED GOLD'}</PixelText>
+                                <PixelText size={8} color="black">{canAfford ? t('store.buy') : t('store.needGold')}</PixelText>
                             </TouchableOpacity>
                         </View>
                     );
@@ -49,10 +51,10 @@ export default function StoreScreen() {
                         <View style={[styles.icon, { justifyContent: 'center', alignItems: 'center' }]}>
                             <PixelText size={20} color="#555">?</PixelText>
                         </View>
-                        <PixelText size={8} color="#777">Coming Soon</PixelText>
+                        <PixelText size={8} color="#777">{t('store.comingSoon')}</PixelText>
                         <PixelText size={8} color="#555" style={{ marginVertical: 5 }}>---</PixelText>
                         <View style={[styles.btn, { backgroundColor: '#333' }]}>
-                            <PixelText size={8} color="#555">LOCKED</PixelText>
+                            <PixelText size={8} color="#555">{t('store.locked')}</PixelText>
                         </View>
                     </View>
                 ))}

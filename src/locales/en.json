@@ -1,0 +1,50 @@
+{
+  "tabs": {
+    "home": "HOME",
+    "trophies": "TROPHIES",
+    "store": "STORE",
+    "config": "CONFIG",
+    "title_home": "WATER RPG",
+    "title_trophies": "TROPHIES",
+    "title_store": "STORE",
+    "title_config": "SETTINGS"
+  },
+  "home": {
+    "timeLeft": "TIME LEFT",
+    "waterDrank": "WATER DRANK",
+    "cups": "Cups",
+    "drinkWater": "🥤 DRINK WATER",
+    "giveUp": "🏳️ GIVE UP",
+    "victory": "VICTORY!",
+    "defeat": "DEFEAT",
+    "victoryMsg": "You defeated the monster!",
+    "defeatMsg": "The monster escaped...",
+    "claimTrophy": "CLAIM TROPHY",
+    "tryAgain": "TRY AGAIN",
+    "startSession": "START SESSION",
+    "waterGoal": "WATER GOAL (Liters)",
+    "durationHours": "DURATION (Hours)",
+    "endTime": "END TIME",
+    "switch": "SWITCH",
+    "diff": "Diff",
+    "fightMonster": "⚔️ FIGHT MONSTER",
+    "cupsProgress": "{{drank}} / {{total}} Cups"
+  },
+  "store": {
+    "title": "💰 MONSTER SHOP 💰",
+    "gold": "GOLD",
+    "buy": "BUY",
+    "needGold": "NEED GOLD",
+    "comingSoon": "Coming Soon",
+    "locked": "LOCKED"
+  },
+  "trophies": {
+    "title": "🏆 HALL OF FAME 🏆",
+    "wins": "Wins:"
+  },
+  "config": {
+    "cupSize": "CUP SIZE (ML)",
+    "cupSizeDesc": "This size is used to calculate how many cups you need to drink to reach your daily goal.",
+    "language": "LANGUAGE"
+  }
+}

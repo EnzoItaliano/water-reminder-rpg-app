@@ -1,0 +1,50 @@
+{
+  "tabs": {
+    "home": "INICIO",
+    "trophies": "TROFEOS",
+    "store": "TIENDA",
+    "config": "CONFIG",
+    "title_home": "WATER RPG",
+    "title_trophies": "TROFEOS",
+    "title_store": "TIENDA",
+    "title_config": "AJUSTES"
+  },
+  "home": {
+    "timeLeft": "TIEMPO RESTANTE",
+    "waterDrank": "AGUA BEBIDA",
+    "cups": "Vasos",
+    "drinkWater": "🥤 BEBER AGUA",
+    "giveUp": "🏳️ RENUNCIAR",
+    "victory": "¡VICTORIA!",
+    "defeat": "DERROTA",
+    "victoryMsg": "¡Has derrotado al monstruo!",
+    "defeatMsg": "El monstruo escapó...",
+    "claimTrophy": "RECLAMAR TROFEO",
+    "tryAgain": "INTENTAR DE NUEVO",
+    "startSession": "INICIAR SESIÓN",
+    "waterGoal": "META DE AGUA (Litros)",
+    "durationHours": "DURACIÓN (Horas)",
+    "endTime": "HORA DE FIN",
+    "switch": "CAMBIAR",
+    "diff": "Dif",
+    "fightMonster": "⚔️ LUCHAR",
+    "cupsProgress": "{{drank}} / {{total}} Vasos"
+  },
+  "store": {
+    "title": "💰 TIENDA DE MONSTRUOS 💰",
+    "gold": "ORO",
+    "buy": "COMPRAR",
+    "needGold": "FALTA ORO",
+    "comingSoon": "Próximamente",
+    "locked": "BLOQUEADO"
+  },
+  "trophies": {
+    "title": "🏆 SALÓN DE LA FAMA 🏆",
+    "wins": "Victorias:"
+  },
+  "config": {
+    "cupSize": "TAMAÑO VASO (ML)",
+    "cupSizeDesc": "Este tamaño se utiliza para calcular cuántos vasos debes beber para alcanzar tu meta diaria.",
+    "language": "IDIOMA"
+  }
+}

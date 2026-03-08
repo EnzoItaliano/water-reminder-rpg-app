@@ -1,0 +1,50 @@
+{
+  "tabs": {
+    "home": "ACCUEIL",
+    "trophies": "TROPHÉES",
+    "store": "BOUTIQUE",
+    "config": "CONFIG",
+    "title_home": "WATER RPG",
+    "title_trophies": "TROPHÉES",
+    "title_store": "BOUTIQUE",
+    "title_config": "PARAMÈTRES"
+  },
+  "home": {
+    "timeLeft": "TEMPS RESTANT",
+    "waterDrank": "EAU BUE",
+    "cups": "Verres",
+    "drinkWater": "🥤 BOIRE DE L'EAU",
+    "giveUp": "🏳️ ABANDONNER",
+    "victory": "VICTOIRE !",
+    "defeat": "DÉFAITE",
+    "victoryMsg": "Vous avez vaincu le monstre !",
+    "defeatMsg": "Le monstre s'est échappé...",
+    "claimTrophy": "RÉCLAMER LE TROPHÉE",
+    "tryAgain": "RÉESSAYER",
+    "startSession": "DÉMARRER LA SESSION",
+    "waterGoal": "OBJECTIF EAU (Litres)",
+    "durationHours": "DURÉE (Heures)",
+    "endTime": "HEURE DE FIN",
+    "switch": "CHANGER",
+    "diff": "Diff",
+    "fightMonster": "⚔️ COMBATTRE",
+    "cupsProgress": "{{drank}} / {{total}} Verres"
+  },
+  "store": {
+    "title": "💰 BOUTIQUE 💰",
+    "gold": "OR",
+    "buy": "ACHETER",
+    "needGold": "BESOIN D'OR",
+    "comingSoon": "Bientôt",
+    "locked": "VERROUILLÉ"
+  },
+  "trophies": {
+    "title": "🏆 PANTHÉON 🏆",
+    "wins": "Victoires :"
+  },
+  "config": {
+    "cupSize": "TAILLE VERRE (ML)",
+    "cupSizeDesc": "Cette taille est utilisée pour calculer le nombre de verres que vous devez boire pour atteindre votre objectif quotidien.",
+    "language": "LANGUE"
+  }
+}

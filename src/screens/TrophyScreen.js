@@ -3,8 +3,10 @@ import { View, ScrollView, StyleSheet, Image } from 'react-native';
 import { useGame } from '../context/GameContext';
 import { PixelText } from '../components/PixelText';
 import { getMonsterImage } from '../utils/images';
+import { useTranslation } from 'react-i18next';
 
 export default function TrophyScreen() {
+    const { t } = useTranslation();
     const { stats, availableMonsters } = useGame();
 
     const LEVELS = [1, 2, 3, 4, 5, 6];
@@ -12,7 +14,7 @@ export default function TrophyScreen() {
     return (
         <ScrollView contentContainerStyle={styles.container}>
             <PixelText size={16} color="#ffd700" style={{ textAlign: 'center', marginBottom: 20 }}>
-                🏆 HALL OF FAME 🏆
+                {t('trophies.title')}
             </PixelText>
 
             {availableMonsters.map(monster => {
@@ -22,7 +24,7 @@ export default function TrophyScreen() {
                     <View key={monster.id} style={styles.row}>
                         <View style={styles.header}>
                             <PixelText color="#bdc3c7">{monster.name}</PixelText>
-                            <PixelText size={8} color="#7f8c8d">Wins: {wins.length}</PixelText>
+                            <PixelText size={8} color="#7f8c8d">{t('trophies.wins')} {wins.length}</PixelText>
                         </View>
                         <View style={styles.iconsRow}>
                             {LEVELS.map(lvl => {
