@@ -1,0 +1,50 @@
+name: Build Android APK
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+  workflow_dispatch: # Allows you to run this workflow manually from the Actions tab
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🏗 Checkout project
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: 📦 Install npm dependencies
+        run: npm ci
+
+      - name: ☕ Setup Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: 📱 Setup Android environment
+        uses: android-actions/setup-android@v3
+
+      - name: 🔑 Grant execute permission for gradlew
+        working-directory: android
+        run: chmod +x gradlew
+
+      - name: 🚀 Build APK with Gradle
+        working-directory: android
+        # This will build a release APK. If you haven't set up a signing key, it will generate an unsigned APK.
+        # Alternatively, you can use `./gradlew assembleDebug` for a debug APK.
+        run: ./gradlew assembleRelease
+
+      - name: 💾 Upload APK as Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release
+          path: android/app/build/outputs/apk/release/*.apk # Uses glob pattern in case of unsigned APK name variant
