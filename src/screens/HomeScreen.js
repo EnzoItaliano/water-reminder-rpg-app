@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { isRateLimited } from '../utils/stats';
 import { View, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
 import { useGame } from '../context/GameContext';
 import { PixelText } from '../components/PixelText';
@@ -111,6 +112,8 @@ export default function HomeScreen({ navigation }) {
         const waterPercent = Math.min(100, (session.cupsDrank / session.totalCups) * 100);
         const monsterPercent = 100 - waterPercent;
 
+        const rateLimited = isRateLimited(session.drinkHistory, stats.cupSizeML || 250);
+
         return (
             <ScrollView contentContainerStyle={styles.container}>
                 <View style={styles.battleScene}>
@@ -118,19 +121,24 @@ export default function HomeScreen({ navigation }) {
                     <Bar percentage={monsterPercent} color="#e74c3c" />
                 </View>
 
-                <View style={styles.statsRow}>
-                    <PixelText>{t('home.timeLeft')}</PixelText>
-                    <PixelText size={14} style={{ marginVertical: 5 }}>{minutesLeft}:{secondsLeft.toString().padStart(2, '0')}</PixelText>
-                    <Bar percentage={timePercent} color="#3498db" />
-                </View>
+                        <View style={styles.statsRow}>
+                            <PixelText>{t('home.timeLeft')}</PixelText>
+                            <PixelText size={14} style={{ marginVertical: 5 }}>{minutesLeft}:{secondsLeft.toString().padStart(2, '0')}</PixelText>
+                            <Bar percentage={timePercent} color="#3498db" />
+                        </View>
 
-                <View style={styles.statsRow}>
-                    <PixelText>{t('home.waterDrank')}</PixelText>
-                    <PixelText size={14} style={{ marginVertical: 5 }}>{t('home.cupsProgress', { drank: session.cupsDrank, total: session.totalCups })}</PixelText>
-                    <Bar percentage={waterPercent} color="#00cec9" />
-                </View>
+                        <View style={styles.statsRow}>
+                            <PixelText>{t('home.waterDrank')}</PixelText>
+                            <PixelText size={14} style={{ marginVertical: 5 }}>{t('home.cupsProgress', { drank: session.cupsDrank, total: session.totalCups })}</PixelText>
+                            <Bar percentage={waterPercent} color="#00cec9" />
+                        </View>
 
-                <ActionBtn title={t('home.drinkWater')} onPress={drinkWater} color="#3498db" borderColor="#2980b9" />
+                        <ActionBtn 
+                            title={rateLimited ? t('home.cooldown') : t('home.drinkWater')} 
+                            onPress={rateLimited ? () => {} : drinkWater} 
+                            color={rateLimited ? "#7f8c8d" : "#3498db"} 
+                            borderColor={rateLimited ? "#555" : "#2980b9"} 
+                        />
                 <SmallBtn title={t('home.giveUp')} onPress={() => endSession('lost')} />
                 {/* Note: endSession('lost') records a loss and clears alarms, matching the extension logic */}
             </ScrollView>
