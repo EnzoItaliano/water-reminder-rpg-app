@@ -176,7 +176,7 @@ export default function HomeScreen({ navigation }) {
                 <View style={styles.durationChooser}>
                     <SmallBtn title="-" onPress={() => setLiters(prev => {
                         const val = parseFloat(prev) || 0;
-                        return Math.max(cupSizeL, val - cupSizeL).toFixed(2);
+                        return Math.max(1.0, val - cupSizeL).toFixed(2);
                     })} />
                     <PixelText style={{ fontSize: 10, flex: 1, textAlign: 'center' }}>
                         {parseFloat(liters).toFixed(2)} L
