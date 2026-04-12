@@ -70,9 +70,6 @@ export const GameProvider = ({ children }) => {
 
             if (elapsedMinutes > currentStats.currentSession.durationMinutes) {
                 // Time Expired -> Lost
-                if (NotificationModule && NotificationModule.sendSessionFailedNotification) {
-                    NotificationModule.sendSessionFailedNotification();
-                }
                 endSession('lost', currentStats);
             }
         }
@@ -106,9 +103,10 @@ export const GameProvider = ({ children }) => {
             // e.g. 60 mins / 4 cups = reminder every 15 mins
             const intervalMinutes = minutes / totalCups;
             const intervalSeconds = Math.floor(intervalMinutes * 60);
+            const endTimeMillis = newStats.currentSession.startTime + (minutes * 60 * 1000);
 
             if (NotificationModule && NotificationModule.startDrinkReminders) {
-                NotificationModule.startDrinkReminders(intervalSeconds);
+                NotificationModule.startDrinkReminders(intervalSeconds, endTimeMillis);
             }
         } catch (error) {
             alert("Failed to start session: " + error.message);

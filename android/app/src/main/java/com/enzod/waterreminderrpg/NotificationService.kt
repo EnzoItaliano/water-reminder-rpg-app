@@ -17,6 +17,7 @@ class NotificationService : Service() {
 
     private val handler = Handler(Looper.getMainLooper())
     private var drinkReminderRunnable: Runnable? = null
+    private var expireRunnable: Runnable? = null
     private var isServiceRunning = false
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -24,7 +25,8 @@ class NotificationService : Service() {
             val action = intent.action
             if (action == "START_REMINDERS") {
                 val intervalInSeconds = intent.getIntExtra("INTERVAL", 60)
-                startReminders(intervalInSeconds)
+                val endTimeMillis = intent.getLongExtra("END_TIME", 0L)
+                startReminders(intervalInSeconds, endTimeMillis)
             } else if (action == "STOP_REMINDERS") {
                 stopReminders()
                 stopSelf()
@@ -33,7 +35,7 @@ class NotificationService : Service() {
         return START_NOT_STICKY
     }
 
-    private fun startReminders(intervalInSeconds: Int) {
+    private fun startReminders(intervalInSeconds: Int, endTimeMillis: Long) {
         if (isServiceRunning) return
         isServiceRunning = true
 
@@ -51,6 +53,19 @@ class NotificationService : Service() {
             startForeground(1001, foregroundNotification, ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE)
         } else {
             startForeground(1001, foregroundNotification)
+        }
+
+        expireRunnable = Runnable {
+            sendFailedNotification()
+            stopReminders()
+            stopSelf()
+        }
+
+        val delayMillis = endTimeMillis - System.currentTimeMillis()
+        if (delayMillis > 0) {
+            handler.postDelayed(expireRunnable!!, delayMillis)
+        } else {
+            handler.post(expireRunnable!!)
         }
 
         drinkReminderRunnable = object : Runnable {
@@ -72,9 +87,23 @@ class NotificationService : Service() {
         handler.postDelayed(drinkReminderRunnable!!, (intervalInSeconds * 1000).toLong())
     }
 
+    private fun sendFailedNotification() {
+        val builder = NotificationCompat.Builder(this, "fight_channel")
+            .setSmallIcon(android.R.drawable.ic_dialog_alert)
+            .setContentTitle("Session Failed!")
+            .setContentText("The monster escaped! You didn't drink enough water in time.")
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setAutoCancel(true)
+
+        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.notify(2, builder.build())
+    }
+
     private fun stopReminders() {
         drinkReminderRunnable?.let { handler.removeCallbacks(it) }
+        expireRunnable?.let { handler.removeCallbacks(it) }
         drinkReminderRunnable = null
+        expireRunnable = null
         isServiceRunning = false
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             stopForeground(STOP_FOREGROUND_REMOVE)
