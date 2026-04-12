@@ -24,15 +24,17 @@ export const defaultStats = {
 };
 
 // Helper: Check if User is Rate Limited
-// Max 2 drinks per WINDOW (where window is dynamic)
-export function isRateLimited(drinkHistory, windowMinutes) {
-    if (!windowMinutes) windowMinutes = 5; // Fallback
+// Volume based: prevent drinking more than maxVolumePerWindow (e.g. 500ml) in windowMinutes (e.g. 1 min)
+export function isRateLimited(drinkHistory, cupSizeML, windowMinutes = 1, maxVolumePerWindow = 500) {
     const now = Date.now();
     const windowMs = windowMinutes * 60 * 1000;
 
     // Filter drinks from the last window
     const recentDrinks = drinkHistory.filter(t => t > (now - windowMs));
 
-    // Allow 2 drinks per window
-    return recentDrinks.length >= 2;
+    // Calculate volume drank in the window
+    const recentVolume = recentDrinks.length * cupSizeML;
+
+    // Reject if taking another drink exceeds the max volume allowed in this window
+    return (recentVolume + cupSizeML) > maxVolumePerWindow;
 }

@@ -33,7 +33,7 @@ class NotificationModule(reactContext: ReactApplicationContext) : ReactContextBa
     }
 
     @ReactMethod
-    fun startDrinkReminders(intervalInSeconds: Int) {
+    fun startDrinkReminders(intervalInSeconds: Int, endTimeMillis: Double) {
         val context = reactApplicationContext
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -45,6 +45,7 @@ class NotificationModule(reactContext: ReactApplicationContext) : ReactContextBa
         val intent = Intent(context, NotificationService::class.java)
         intent.action = "START_REMINDERS"
         intent.putExtra("INTERVAL", intervalInSeconds)
+        intent.putExtra("END_TIME", endTimeMillis.toLong())
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             context.startForegroundService(intent)

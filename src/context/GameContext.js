@@ -70,9 +70,6 @@ export const GameProvider = ({ children }) => {
 
             if (elapsedMinutes > currentStats.currentSession.durationMinutes) {
                 // Time Expired -> Lost
-                if (NotificationModule && NotificationModule.sendSessionFailedNotification) {
-                    NotificationModule.sendSessionFailedNotification();
-                }
                 endSession('lost', currentStats);
             }
         }
@@ -106,9 +103,10 @@ export const GameProvider = ({ children }) => {
             // e.g. 60 mins / 4 cups = reminder every 15 mins
             const intervalMinutes = minutes / totalCups;
             const intervalSeconds = Math.floor(intervalMinutes * 60);
+            const endTimeMillis = newStats.currentSession.startTime + (minutes * 60 * 1000);
 
             if (NotificationModule && NotificationModule.startDrinkReminders) {
-                NotificationModule.startDrinkReminders(intervalSeconds);
+                NotificationModule.startDrinkReminders(intervalSeconds, endTimeMillis);
             }
         } catch (error) {
             alert("Failed to start session: " + error.message);
@@ -120,12 +118,7 @@ export const GameProvider = ({ children }) => {
         if (stats.currentSession.status !== 'running') return;
 
         // Rate Limit
-        if (isRateLimited(stats.currentSession.drinkHistory, 5)) { // Hardcoded 5 or 2? Extension uses 5 or dynamic?
-            // Extension uses dynamic sometimes but passed to helper. Utils default is 5.
-            // Let's stick to 5 for simplicity or check prompt
-            // Extension game.js: isRateLimited(session.drinkHistory). 
-            // Utils stats.js: if (!windowMinutes) windowMinutes = 5;
-            // So default is 5.
+        if (isRateLimited(stats.currentSession.drinkHistory, stats.cupSizeML || 250)) {
             return { success: false, reason: 'limit' };
         }
 
