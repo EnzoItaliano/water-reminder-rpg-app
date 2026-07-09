@@ -43,3 +43,7 @@ google-services.json
 # IDE properties
 .idea/
 .vscode/
+
+CLAUDE.md
+.claude/
+graphify-out/

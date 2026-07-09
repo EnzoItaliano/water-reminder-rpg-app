@@ -35,7 +35,8 @@
     },
     "plugins": [
       "expo-font",
-      "./plugins/withNotificationModule"
+      "./plugins/withNotificationModule",
+      "./plugins/withGoogleServices"
     ],
     "extra": {
       "eas": {
