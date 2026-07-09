@@ -24,14 +24,19 @@
       "package": "com.enzod.waterreminderrpg",
       "edgeToEdgeEnabled": true,
       "permissions": [
-        "android.permission.VIBRATE"
+        "android.permission.VIBRATE",
+        "android.permission.POST_NOTIFICATIONS",
+        "android.permission.FOREGROUND_SERVICE",
+        "android.permission.FOREGROUND_SERVICE_SPECIAL_USE"
       ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      "expo-font"
+      "expo-font",
+      "./plugins/withNotificationModule",
+      "./plugins/withGoogleServices"
     ],
     "extra": {
       "eas": {
