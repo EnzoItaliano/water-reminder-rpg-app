@@ -16,11 +16,13 @@ export const defaultStats = {
     // Persistent Data
     trophies: [], // History of won sessions { date, monsterId, difficulty, monsterIcon }
     totalWaterDrankML: 0,
+    dailyIntake: {}, // Consumption History: local date "YYYY-MM-DD" -> millilitres
     sessionsCompleted: 0,
     gold: 0,
     unlockedMonsters: ['sand_slime', 'cactus_golem', 'dust_phoenix', 'drought_king'],
     lastMonsterId: 'sand_slime',
-    cupSizeML: 250
+    cupSizeML: 250,
+    weekStartsOn: 0 // 0 = Sunday, 1 = Monday
 };
 
 // Helper: Check if User is Rate Limited

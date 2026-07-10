@@ -1,6 +1,7 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { defaultStats, isRateLimited } from '../utils/stats';
+import { addIntake } from '../utils/history';
 import { AVAILABLE_MONSTERS } from '../utils/monsters';
 
 const GameContext = createContext();
@@ -129,6 +130,7 @@ export const GameProvider = ({ children }) => {
         session.drinkHistory.push(Date.now());
         const cupSize = stats.cupSizeML || 250;
         newStats.totalWaterDrankML += cupSize;
+        newStats.dailyIntake = addIntake(newStats.dailyIntake || {}, Date.now(), cupSize);
 
         if (session.cupsDrank >= session.totalCups) {
             await endSession('won', newStats);
@@ -196,6 +198,11 @@ export const GameProvider = ({ children }) => {
         await saveStats(newStats);
     };
 
+    const updateWeekStart = async (day) => {
+        const newStats = { ...stats, weekStartsOn: day };
+        await saveStats(newStats);
+    };
+
     return (
         <GameContext.Provider value={{
             stats,
@@ -206,6 +213,7 @@ export const GameProvider = ({ children }) => {
             endSession,
             buyMonster,
             updateCupSize,
+            updateWeekStart,
             availableMonsters: AVAILABLE_MONSTERS
         }}>
             {children}
