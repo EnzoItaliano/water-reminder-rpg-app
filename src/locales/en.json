@@ -4,10 +4,12 @@
     "trophies": "TROPHIES",
     "store": "STORE",
     "config": "CONFIG",
+    "stats": "STATS",
     "title_home": "WATER RPG",
     "title_trophies": "TROPHIES",
     "title_store": "STORE",
-    "title_config": "SETTINGS"
+    "title_config": "SETTINGS",
+    "title_stats": "STATS"
   },
   "home": {
     "timeLeft": "TIME LEFT",
@@ -43,9 +45,20 @@
     "title": "🏆 HALL OF FAME 🏆",
     "wins": "Wins:"
   },
+  "stats": {
+    "week": "WEEK",
+    "month": "MONTH",
+    "year": "YEAR",
+    "empty": "No hydration logged yet.\nWin a fight to start your history!",
+    "weekdayInitials": ["S", "M", "T", "W", "T", "F", "S"],
+    "monthInitials": ["J", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D"]
+  },
   "config": {
     "cupSize": "CUP SIZE (ML)",
     "cupSizeDesc": "This size is used to calculate how many cups you need to drink to reach your daily goal.",
-    "language": "LANGUAGE"
+    "language": "LANGUAGE",
+    "weekStart": "WEEK STARTS ON",
+    "sunday": "SUN",
+    "monday": "MON"
   }
 }

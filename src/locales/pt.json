@@ -4,10 +4,12 @@
     "trophies": "TROFÉUS",
     "store": "LOJA",
     "config": "CONFIG",
+    "stats": "STATS",
     "title_home": "WATER RPG",
     "title_trophies": "TROFÉUS",
     "title_store": "LOJA",
-    "title_config": "CONFIGURAÇÕES"
+    "title_config": "CONFIGURAÇÕES",
+    "title_stats": "ESTATÍSTICAS"
   },
   "home": {
     "timeLeft": "TEMPO RESTANTE",
@@ -43,9 +45,20 @@
     "title": "🏆 HALL DA FAMA 🏆",
     "wins": "Vitórias:"
   },
+  "stats": {
+    "week": "SEMANA",
+    "month": "MÊS",
+    "year": "ANO",
+    "empty": "Nenhuma hidratação registrada.\nVença uma luta para começar seu histórico!",
+    "weekdayInitials": ["D", "S", "T", "Q", "Q", "S", "S"],
+    "monthInitials": ["J", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D"]
+  },
   "config": {
     "cupSize": "TAMANHO DO COPO (ML)",
     "cupSizeDesc": "Este tamanho é usado para calcular quantos copos você precisa beber para atingir sua meta diária.",
-    "language": "IDIOMA"
+    "language": "IDIOMA",
+    "weekStart": "SEMANA COMEÇA EM",
+    "sunday": "DOM",
+    "monday": "SEG"
   }
 }

@@ -4,10 +4,12 @@
     "trophies": "TROFEOS",
     "store": "TIENDA",
     "config": "CONFIG",
+    "stats": "STATS",
     "title_home": "WATER RPG",
     "title_trophies": "TROFEOS",
     "title_store": "TIENDA",
-    "title_config": "AJUSTES"
+    "title_config": "AJUSTES",
+    "title_stats": "ESTADÍSTICAS"
   },
   "home": {
     "timeLeft": "TIEMPO RESTANTE",
@@ -43,9 +45,20 @@
     "title": "🏆 SALÓN DE LA FAMA 🏆",
     "wins": "Victorias:"
   },
+  "stats": {
+    "week": "SEMANA",
+    "month": "MES",
+    "year": "AÑO",
+    "empty": "Aún no hay hidratación registrada.\n¡Gana un combate para empezar tu historial!",
+    "weekdayInitials": ["D", "L", "M", "X", "J", "V", "S"],
+    "monthInitials": ["E", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D"]
+  },
   "config": {
     "cupSize": "TAMAÑO VASO (ML)",
     "cupSizeDesc": "Este tamaño se utiliza para calcular cuántos vasos debes beber para alcanzar tu meta diaria.",
-    "language": "IDIOMA"
+    "language": "IDIOMA",
+    "weekStart": "LA SEMANA EMPIEZA EL",
+    "sunday": "DOM",
+    "monday": "LUN"
   }
 }
