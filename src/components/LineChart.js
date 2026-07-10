@@ -8,7 +8,7 @@ const PAD_TOP = 10;
 const PAD_BOTTOM = 24;
 const PAD_LEFT = 34;
 const PAD_RIGHT = 10;
-const TICK_COUNT = 4;
+const TICK_COUNT = 5;
 
 export const LineChart = ({ points, width, height }) => {
     const g = computeChartGeometry(points, {
@@ -50,7 +50,7 @@ export const LineChart = ({ points, width, height }) => {
                     key={`xlab-${i}`}
                     size={7}
                     color="#7f8c8d"
-                    style={{ position: 'absolute', top: height - 14, left: xl.x - 10, width: 20, textAlign: 'center' }}
+                    style={{ position: 'absolute', top: height - PAD_BOTTOM + 10, left: xl.x - 10, width: 20, textAlign: 'center' }}
                 >
                     {xl.label}
                 </PixelText>

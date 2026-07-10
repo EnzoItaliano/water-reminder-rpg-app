@@ -1,8 +1,8 @@
 import { mlToLiters } from './history';
 
-// Round up to the next "nice" 1/2/5 x 10^n value. Empty data floors at 500 ml.
+// Round up to the next "nice" 1/2/5 x 10^n value. The axis floors at 500 ml.
 export function niceCeil(ml) {
-  if (ml <= 0) return 500;
+  if (ml <= 500) return 500;
   const pow = Math.pow(10, Math.floor(Math.log10(ml)));
   const frac = ml / pow;
   let niceFrac;

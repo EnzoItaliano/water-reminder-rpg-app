@@ -28,7 +28,7 @@ export default function StatsScreen() {
         }
     );
 
-    const chartWidth = Dimensions.get('window').width - 40;
+    const chartWidth = Dimensions.get('window').width - 40 - 24; // container padding + panel border/padding
     const chartHeight = 220;
     const showChart = points.length > 0 && hasData(points);
 

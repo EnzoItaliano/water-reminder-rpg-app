@@ -126,11 +126,12 @@ export const GameProvider = ({ children }) => {
         const newStats = { ...stats };
         const session = newStats.currentSession;
 
+        const now = Date.now();
         session.cupsDrank++;
-        session.drinkHistory.push(Date.now());
+        session.drinkHistory.push(now);
         const cupSize = stats.cupSizeML || 250;
         newStats.totalWaterDrankML += cupSize;
-        newStats.dailyIntake = addIntake(newStats.dailyIntake || {}, Date.now(), cupSize);
+        newStats.dailyIntake = addIntake(newStats.dailyIntake || {}, now, cupSize);
 
         if (session.cupsDrank >= session.totalCups) {
             await endSession('won', newStats);

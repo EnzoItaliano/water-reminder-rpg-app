@@ -10,6 +10,11 @@ describe('niceCeil', () => {
     expect(niceCeil(2000)).toBe(2000);
     expect(niceCeil(2100)).toBe(5000);
   });
+  it('floors small maxima to 500 ml so tick labels stay exact', () => {
+    expect(niceCeil(100)).toBe(500);
+    expect(niceCeil(200)).toBe(500);
+    expect(niceCeil(499)).toBe(500);
+  });
 });
 
 const opts = {
@@ -49,5 +54,11 @@ describe('computeChartGeometry', () => {
     const g = computeChartGeometry([], opts);
     expect(g.line).toBe('');
     expect(g.dots).toEqual([]);
+  });
+
+  it('produces tick liters that are exact 0.1 multiples with 5 ticks', () => {
+    const g = computeChartGeometry([{ label: 'a', ml: 250 }], { ...opts, tickCount: 5 });
+    expect(g.niceMax).toBe(500);
+    expect(g.yTicks.map((t) => t.liters)).toEqual([0, 0.1, 0.2, 0.3, 0.4, 0.5]);
   });
 });
