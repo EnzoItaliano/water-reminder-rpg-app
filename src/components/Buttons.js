@@ -27,9 +27,9 @@ export const IconBtn = ({ icon, onPress }) => {
     );
 };
 
-export const SmallBtn = ({ title, onPress }) => {
+export const SmallBtn = ({ title, onPress, color = '#555', borderColor = '#000' }) => {
     return (
-        <TouchableOpacity style={styles.smallBtn} onPress={onPress}>
+        <TouchableOpacity style={[styles.smallBtn, { backgroundColor: color, borderColor }]} onPress={onPress}>
             <PixelText size={8}>{title}</PixelText>
         </TouchableOpacity>
     );
