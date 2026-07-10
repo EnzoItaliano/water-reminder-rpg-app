@@ -41,7 +41,7 @@ export const LineChart = ({ points, width, height }) => {
                     color="#7f8c8d"
                     style={{ position: 'absolute', left: 0, top: tick.y - 4, width: PAD_LEFT - 4, textAlign: 'right' }}
                 >
-                    {tick.liters}
+                    {tick.liters.toFixed(1)}
                 </PixelText>
             ))}
 
