@@ -28,3 +28,56 @@ export function startOfWeek(now, weekStartsOn) {
   const diff = (now.getDay() - weekStartsOn + 7) % 7;
   return new Date(now.getFullYear(), now.getMonth(), now.getDate() - diff);
 }
+
+function dateKeyFromParts(y, m, d) {
+  return `${y}-${pad2(m + 1)}-${pad2(d)}`;
+}
+
+// Build the plotted series for the current week/month/year window.
+export function buildSeries(dailyIntake, period, now, options) {
+  const { weekStartsOn, weekdayInitials, monthInitials } = options;
+
+  if (period === 'year') {
+    const y = now.getFullYear();
+    const curMonth = now.getMonth();
+    const points = [];
+    for (let mo = 0; mo <= curMonth; mo++) {
+      const prefix = `${y}-${pad2(mo + 1)}`;
+      let ml = 0;
+      for (const k in dailyIntake) {
+        if (k.slice(0, 7) === prefix) ml += dailyIntake[k];
+      }
+      points.push({ key: prefix, ml, label: monthInitials[mo] });
+    }
+    return points;
+  }
+
+  if (period === 'month') {
+    const y = now.getFullYear();
+    const m = now.getMonth();
+    const today = now.getDate();
+    const points = [];
+    for (let day = 1; day <= today; day++) {
+      const key = dateKeyFromParts(y, m, day);
+      const showLabel = day === 1 || day % 5 === 0 || day === today;
+      points.push({ key, ml: dailyIntake[key] || 0, label: showLabel ? String(day) : '' });
+    }
+    return points;
+  }
+
+  // week
+  const start = startOfWeek(now, weekStartsOn);
+  const todayMid = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const points = [];
+  const cursor = new Date(start);
+  while (cursor <= todayMid) {
+    const key = dateKeyFromParts(cursor.getFullYear(), cursor.getMonth(), cursor.getDate());
+    points.push({ key, ml: dailyIntake[key] || 0, label: weekdayInitials[cursor.getDay()] });
+    cursor.setDate(cursor.getDate() + 1);
+  }
+  return points;
+}
+
+export function hasData(points) {
+  return points.some((p) => p.ml > 0);
+}
