@@ -3,6 +3,7 @@ package com.enzod.waterreminderrpg
 import android.Manifest
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -10,6 +11,8 @@ import android.os.Build
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
+import com.facebook.react.bridge.Arguments
+import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
@@ -41,7 +44,7 @@ class NotificationModule(reactContext: ReactApplicationContext) : ReactContextBa
                 // We still schedule it, but the OS might block until permission is granted
             }
         }
-        
+
         val intent = Intent(context, NotificationService::class.java)
         intent.action = "START_REMINDERS"
         intent.putExtra("INTERVAL", intervalInSeconds)
@@ -62,6 +65,23 @@ class NotificationModule(reactContext: ReactApplicationContext) : ReactContextBa
         context.startService(intent) // stopSelf handled inside service
     }
 
+    // Drains the tap timestamps queued by the notification's "Drink" action.
+    // Read-and-clear is atomic (synchronized in NotificationService), so the
+    // JS event / resume / load paths can never see the same tap twice.
+    @ReactMethod
+    fun consumePendingDrinks(promise: Promise) {
+        try {
+            val timestamps = NotificationService.consumeDrinks(reactApplicationContext)
+            val result = Arguments.createArray()
+            for (ts in timestamps) {
+                result.pushDouble(ts.toDouble())
+            }
+            promise.resolve(result)
+        } catch (e: Exception) {
+            promise.reject("consume_pending_drinks_failed", e)
+        }
+    }
+
     @ReactMethod
     fun sendSessionFailedNotification() {
         val context = reactApplicationContext
@@ -73,6 +93,15 @@ class NotificationModule(reactContext: ReactApplicationContext) : ReactContextBa
             .setContentText("The monster escaped! You didn't drink enough water in time.")
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setAutoCancel(true)
+
+        val launchIntent = context.packageManager.getLaunchIntentForPackage(context.packageName)
+        if (launchIntent != null) {
+            val contentIntent = PendingIntent.getActivity(
+                context, 0, launchIntent,
+                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+            )
+            builder.setContentIntent(contentIntent)
+        }
 
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         // notify(2) for a separate ID
