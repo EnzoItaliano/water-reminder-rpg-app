@@ -1,14 +1,14 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { defaultStats, isRateLimited } from '../utils/stats';
-import { addIntake } from '../utils/history';
+import { defaultStats } from '../utils/stats';
+import { applyDrinkTimestamps } from '../utils/drinks';
 import { AVAILABLE_MONSTERS } from '../utils/monsters';
 
 const GameContext = createContext();
 
 export const useGame = () => useContext(GameContext);
 
-import { NativeModules } from 'react-native';
+import { NativeModules, DeviceEventEmitter, AppState } from 'react-native';
 const { NotificationModule } = NativeModules;
 
 export const GameProvider = ({ children }) => {
@@ -64,6 +64,23 @@ export const GameProvider = ({ children }) => {
         return () => clearInterval(interval);
     }, [stats]);
 
+    // Drinks logged from the notification's "Drink" action: consume on load,
+    // in real time via the device event, and again whenever the app resumes.
+    useEffect(() => {
+        if (loading) return;
+
+        consumeNotificationDrinks();
+
+        const drinkSub = DeviceEventEmitter.addListener('onNotificationDrink', consumeNotificationDrinks);
+        const appStateSub = AppState.addEventListener('change', (state) => {
+            if (state === 'active') consumeNotificationDrinks();
+        });
+        return () => {
+            drinkSub.remove();
+            appStateSub.remove();
+        };
+    }, [stats, loading]);
+
     const checkSessionState = (currentStats) => {
         if (currentStats.currentSession.status === 'running') {
             const now = Date.now();
@@ -115,31 +132,39 @@ export const GameProvider = ({ children }) => {
     };
 
 
-    const drinkWater = async () => {
+    const applyDrinks = async (timestamps) => {
         if (stats.currentSession.status !== 'running') return;
 
-        // Rate Limit
-        if (isRateLimited(stats.currentSession.drinkHistory, stats.cupSizeML || 250)) {
+        const { stats: newStats, applied, won } = applyDrinkTimestamps(stats, timestamps);
+
+        if (applied === 0) {
             return { success: false, reason: 'limit' };
         }
 
-        const newStats = { ...stats };
-        const session = newStats.currentSession;
-
-        const now = Date.now();
-        session.cupsDrank++;
-        session.drinkHistory.push(now);
-        const cupSize = stats.cupSizeML || 250;
-        newStats.totalWaterDrankML += cupSize;
-        newStats.dailyIntake = addIntake(newStats.dailyIntake || {}, now, cupSize);
-
-        if (session.cupsDrank >= session.totalCups) {
+        if (won) {
             await endSession('won', newStats);
             return { success: true, result: 'won' };
         }
 
         await saveStats(newStats);
         return { success: true };
+    };
+
+    const drinkWater = () => applyDrinks([Date.now()]);
+
+    // Pulls tap timestamps queued by the notification "Drink" action.
+    // Native clears the queue atomically, so the event / resume / load
+    // paths can never double-count the same tap.
+    const consumeNotificationDrinks = async () => {
+        if (!NotificationModule || !NotificationModule.consumePendingDrinks) return;
+        try {
+            const timestamps = await NotificationModule.consumePendingDrinks();
+            if (timestamps && timestamps.length > 0) {
+                await applyDrinks(timestamps);
+            }
+        } catch (e) {
+            console.error("Failed to consume notification drinks", e);
+        }
     };
 
     const endSession = async (result, currentStats = stats) => {
