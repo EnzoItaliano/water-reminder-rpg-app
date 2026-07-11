@@ -65,12 +65,14 @@ export const GameProvider = ({ children }) => {
                             return;
                         }
                         await saveStats(savedStats);
+                        return;
                     }
                 } catch (e) {
                     console.error("Failed to replay notification drinks", e);
                 }
             }
 
+            statsRef.current = savedStats;
             setStats(savedStats);
             checkSessionState(savedStats);
         } catch (e) {
@@ -83,8 +85,8 @@ export const GameProvider = ({ children }) => {
     // Periodic Check (instead of background worker)
     useEffect(() => {
         const interval = setInterval(() => {
-            if (stats.currentSession.status === 'running') {
-                checkSessionState(stats);
+            if (statsRef.current.currentSession.status === 'running') {
+                checkSessionState(statsRef.current);
             }
         }, 1000);
         return () => clearInterval(interval);
@@ -122,11 +124,11 @@ export const GameProvider = ({ children }) => {
 
     const startSession = async (liters, minutes, monsterId) => {
         try {
-            const cupSize = stats.cupSizeML || 250;
+            const cupSize = statsRef.current.cupSizeML || 250;
             const totalCups = Math.ceil((liters * 1000) / cupSize);
             const difficulty = Math.max(1, Math.min(10, totalCups - 3));
 
-            const newStats = { ...stats };
+            const newStats = { ...statsRef.current };
             newStats.currentSession = {
                 isActive: true,
                 status: 'running',
@@ -198,7 +200,7 @@ export const GameProvider = ({ children }) => {
         }
     };
 
-    const endSession = async (result, currentStats = stats) => {
+    const endSession = async (result, currentStats = statsRef.current) => {
         console.log(`Ending session: ${result}`);
 
         if (NotificationModule && NotificationModule.stopDrinkReminders) {
@@ -214,6 +216,7 @@ export const GameProvider = ({ children }) => {
         if (result === 'won') {
             newStats.sessionsCompleted++;
             newStats.gold = (newStats.gold || 0) + session.difficulty;
+            newStats.trophies = [...(newStats.trophies || [])];
             newStats.trophies.push({
                 date: Date.now(),
                 monsterId: session.monsterId,
@@ -229,7 +232,7 @@ export const GameProvider = ({ children }) => {
         if (NotificationModule && NotificationModule.stopDrinkReminders) {
             NotificationModule.stopDrinkReminders();
         }
-        const newStats = { ...stats };
+        const newStats = { ...statsRef.current };
         newStats.currentSession = {
             ...defaultStats.currentSession,
             status: 'idle',
@@ -239,10 +242,11 @@ export const GameProvider = ({ children }) => {
     };
 
     const buyMonster = async (monsterId, cost) => {
-        if (stats.gold >= cost && !stats.unlockedMonsters.includes(monsterId)) {
-            const newStats = { ...stats };
+        const current = statsRef.current;
+        if (current.gold >= cost && !current.unlockedMonsters.includes(monsterId)) {
+            const newStats = { ...current };
             newStats.gold -= cost;
-            newStats.unlockedMonsters.push(monsterId);
+            newStats.unlockedMonsters = [...newStats.unlockedMonsters, monsterId];
             await saveStats(newStats);
             return true;
         }
@@ -250,13 +254,13 @@ export const GameProvider = ({ children }) => {
     };
 
     const updateCupSize = async (newSize) => {
-        const newStats = { ...stats };
+        const newStats = { ...statsRef.current };
         newStats.cupSizeML = newSize;
         await saveStats(newStats);
     };
 
     const updateWeekStart = async (day) => {
-        const newStats = { ...stats, weekStartsOn: day };
+        const newStats = { ...statsRef.current, weekStartsOn: day };
         await saveStats(newStats);
     };
 
