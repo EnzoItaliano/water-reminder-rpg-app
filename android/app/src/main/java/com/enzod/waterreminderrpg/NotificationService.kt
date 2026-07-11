@@ -7,6 +7,7 @@ import android.app.PendingIntent
 import android.app.Service
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.ServiceInfo
 import android.os.Build
 import android.os.Handler
@@ -22,21 +23,38 @@ class NotificationService : Service() {
     companion object {
         private const val DRINK_PREFS = "notification_drinks"
         private const val DRINK_KEY = "pending"
+        private const val LAST_TAP_KEY = "last_tap"
+        private const val DEBOUNCE_MS = 1000L
+
+        private fun readPending(prefs: SharedPreferences): JSONArray =
+            try {
+                JSONArray(prefs.getString(DRINK_KEY, "[]"))
+            } catch (e: Exception) {
+                JSONArray() // corrupted value — drop it rather than poison every future consume
+            }
 
         // Called from the service (main thread) and NotificationModule (RN
         // native-modules thread) — @Synchronized guards the read-modify-write.
+        // Returns false when the tap landed inside the debounce window —
+        // notification actions are easy to double-tap before the
+        // notification dismisses.
         @Synchronized
-        fun queueDrink(context: Context, timestampMs: Long) {
+        fun queueDrink(context: Context, timestampMs: Long): Boolean {
             val prefs = context.getSharedPreferences(DRINK_PREFS, Context.MODE_PRIVATE)
-            val arr = JSONArray(prefs.getString(DRINK_KEY, "[]"))
+            if (timestampMs - prefs.getLong(LAST_TAP_KEY, 0L) < DEBOUNCE_MS) return false
+            val arr = readPending(prefs)
             arr.put(timestampMs)
-            prefs.edit().putString(DRINK_KEY, arr.toString()).apply()
+            prefs.edit()
+                .putString(DRINK_KEY, arr.toString())
+                .putLong(LAST_TAP_KEY, timestampMs)
+                .apply()
+            return true
         }
 
         @Synchronized
         fun consumeDrinks(context: Context): List<Long> {
             val prefs = context.getSharedPreferences(DRINK_PREFS, Context.MODE_PRIVATE)
-            val arr = JSONArray(prefs.getString(DRINK_KEY, "[]"))
+            val arr = readPending(prefs)
             prefs.edit().remove(DRINK_KEY).apply()
             return (0 until arr.length()).map { arr.getLong(it) }
         }
@@ -87,17 +105,19 @@ class NotificationService : Service() {
     }
 
     private fun handleDrinkAction() {
-        queueDrink(this, System.currentTimeMillis())
+        val queued = queueDrink(this, System.currentTimeMillis())
 
         // Wake the JS side immediately if the React context is alive;
         // otherwise the queued timestamp is consumed on next app launch/resume.
-        try {
-            (application as? ReactApplication)
-                ?.reactHost
-                ?.currentReactContext
-                ?.emitDeviceEvent("onNotificationDrink", null)
-        } catch (e: Exception) {
-            // JS unavailable — the queue covers it.
+        if (queued) {
+            try {
+                (application as? ReactApplication)
+                    ?.reactHost
+                    ?.currentReactContext
+                    ?.emitDeviceEvent("onNotificationDrink", null)
+            } catch (e: Exception) {
+                // JS unavailable — the queue covers it.
+            }
         }
 
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
