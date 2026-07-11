@@ -27,12 +27,13 @@ export const defaultStats = {
 
 // Helper: Check if User is Rate Limited
 // Volume based: prevent drinking more than maxVolumePerWindow (e.g. 500ml) in windowMinutes (e.g. 1 min)
-export function isRateLimited(drinkHistory, cupSizeML, windowMinutes = 1, maxVolumePerWindow = 500) {
-    const now = Date.now();
+// `at` is the moment the drink happens — defaults to now, but queued
+// notification taps are evaluated at their original tap time.
+export function isRateLimited(drinkHistory, cupSizeML, windowMinutes = 1, maxVolumePerWindow = 500, at = Date.now()) {
     const windowMs = windowMinutes * 60 * 1000;
 
     // Filter drinks from the last window
-    const recentDrinks = drinkHistory.filter(t => t > (now - windowMs));
+    const recentDrinks = drinkHistory.filter(t => t > (at - windowMs));
 
     // Calculate volume drank in the window
     const recentVolume = recentDrinks.length * cupSizeML;
