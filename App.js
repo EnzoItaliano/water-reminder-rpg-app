@@ -10,6 +10,7 @@ import { GameProvider } from './src/context/GameContext';
 import HomeScreen from './src/screens/HomeScreen';
 import TrophyScreen from './src/screens/TrophyScreen';
 import StoreScreen from './src/screens/StoreScreen';
+import StatsScreen from './src/screens/StatsScreen';
 import ConfigScreen from './src/screens/ConfigScreen';
 import { PixelText } from './src/components/PixelText';
 import { TouchableOpacity, NativeModules, Platform, View } from 'react-native';
@@ -88,6 +89,15 @@ function AppContent() {
             title: t('tabs.title_store'),
             tabBarLabel: ({ color }) => <PixelText size={8} color={color} style={{ marginBottom: 5 }}>{t('tabs.store')}</PixelText>,
             tabBarIcon: () => <PixelText size={16}>🛒</PixelText>,
+          }}
+        />
+        <Tab.Screen
+          name="Stats"
+          component={StatsScreen}
+          options={{
+            title: t('tabs.title_stats'),
+            tabBarLabel: ({ color }) => <PixelText size={8} color={color} style={{ marginBottom: 5 }}>{t('tabs.stats')}</PixelText>,
+            tabBarIcon: () => <PixelText size={16}>📊</PixelText>,
           }}
         />
         <Tab.Screen

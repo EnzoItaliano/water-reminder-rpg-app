@@ -7,9 +7,10 @@ import { useTranslation } from 'react-i18next';
 
 export default function ConfigScreen() {
     const { t, i18n } = useTranslation();
-    const { stats, updateCupSize } = useGame();
+    const { stats, updateCupSize, updateWeekStart } = useGame();
     // Default to 250 if undefined in older saves
     const currentSize = stats.cupSizeML || 250;
+    const weekStartsOn = stats.weekStartsOn ?? 0;
 
     const handleMinus = () => {
         if (currentSize > 100) {
@@ -59,6 +60,28 @@ export default function ConfigScreen() {
                         {currentSize} ml
                     </PixelText>
                     <SmallBtn title="+" onPress={handlePlus} />
+                </View>
+            </View>
+
+            <View style={styles.groupContainer}>
+                <View style={{ marginBottom: 10 }}>
+                    <PixelText size={10} color="#bdc3c7" style={{ textAlign: 'center' }}>
+                        {t('config.weekStart')}
+                    </PixelText>
+                </View>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-evenly', marginVertical: 10 }}>
+                    {[{ day: 0, label: t('config.sunday') }, { day: 1, label: t('config.monday') }].map(({ day, label }) => {
+                        const isActive = weekStartsOn === day;
+                        return (
+                            <SmallBtn
+                                key={day}
+                                title={label}
+                                onPress={() => updateWeekStart(day)}
+                                color={isActive ? '#3498db' : '#2c3e50'}
+                                borderColor={isActive ? '#2980b9' : '#34495e'}
+                            />
+                        );
+                    })}
                 </View>
             </View>
 

@@ -4,10 +4,12 @@
     "trophies": "TROPHÉES",
     "store": "BOUTIQUE",
     "config": "CONFIG",
+    "stats": "STATS",
     "title_home": "WATER RPG",
     "title_trophies": "TROPHÉES",
     "title_store": "BOUTIQUE",
-    "title_config": "PARAMÈTRES"
+    "title_config": "PARAMÈTRES",
+    "title_stats": "STATISTIQUES"
   },
   "home": {
     "timeLeft": "TEMPS RESTANT",
@@ -43,9 +45,20 @@
     "title": "🏆 PANTHÉON 🏆",
     "wins": "Victoires :"
   },
+  "stats": {
+    "week": "SEMAINE",
+    "month": "MOIS",
+    "year": "ANNÉE",
+    "empty": "Aucune hydratation enregistrée.\nGagnez un combat pour commencer votre historique !",
+    "weekdayInitials": ["D", "L", "M", "M", "J", "V", "S"],
+    "monthInitials": ["J", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D"]
+  },
   "config": {
     "cupSize": "TAILLE VERRE (ML)",
     "cupSizeDesc": "Cette taille est utilisée pour calculer le nombre de verres que vous devez boire pour atteindre votre objectif quotidien.",
-    "language": "LANGUE"
+    "language": "LANGUE",
+    "weekStart": "DÉBUT DE SEMAINE",
+    "sunday": "DIM",
+    "monday": "LUN"
   }
 }
