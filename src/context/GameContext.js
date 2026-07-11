@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect, useContext } from 'react';
+import React, { createContext, useState, useEffect, useContext, useRef } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { defaultStats } from '../utils/stats';
 import { applyDrinkTimestamps } from '../utils/drinks';
@@ -15,6 +15,12 @@ export const GameProvider = ({ children }) => {
     const [stats, setStats] = useState(defaultStats);
     const [loading, setLoading] = useState(true);
 
+    // Fresh-stats ref + serialization queue so overlapping drink batches
+    // (device event, app resume, in-app tap) never apply to stale state.
+    const statsRef = useRef(stats);
+    useEffect(() => { statsRef.current = stats; }, [stats]);
+    const drinkQueue = useRef(Promise.resolve());
+
     // Load Stats on Mount
     useEffect(() => {
         loadStats();
@@ -24,6 +30,7 @@ export const GameProvider = ({ children }) => {
     // For critical actions, we will save explicitly.
     const saveStats = async (newStats) => {
         try {
+            statsRef.current = newStats;
             await AsyncStorage.setItem('userStats', JSON.stringify(newStats));
             setStats(newStats);
         } catch (e) {
@@ -43,6 +50,25 @@ export const GameProvider = ({ children }) => {
             // Migration for unlocked monsters
             if (!savedStats.unlockedMonsters) {
                 savedStats.unlockedMonsters = ['sand_slime', 'cactus_golem', 'dust_phoenix', 'drought_king'];
+            }
+
+            // Replay drinks tapped on the notification while the app was dead —
+            // before the expiry check, so a winning final tap counts as a win.
+            if (NotificationModule && NotificationModule.consumePendingDrinks) {
+                try {
+                    const timestamps = await NotificationModule.consumePendingDrinks();
+                    if (timestamps && timestamps.length > 0) {
+                        const result = applyDrinkTimestamps(savedStats, timestamps);
+                        savedStats = result.stats;
+                        if (result.won) {
+                            await endSession('won', savedStats);
+                            return;
+                        }
+                        await saveStats(savedStats);
+                    }
+                } catch (e) {
+                    console.error("Failed to replay notification drinks", e);
+                }
             }
 
             setStats(savedStats);
@@ -132,25 +158,30 @@ export const GameProvider = ({ children }) => {
     };
 
 
-    const applyDrinks = async (timestamps) => {
-        if (stats.currentSession.status !== 'running') return;
+    const applyDrinks = (timestamps) => {
+        const run = drinkQueue.current.then(async () => {
+            const { stats: newStats, applied, won } = applyDrinkTimestamps(statsRef.current, timestamps);
 
-        const { stats: newStats, applied, won } = applyDrinkTimestamps(stats, timestamps);
+            if (applied === 0) {
+                return { success: false, reason: 'limit' };
+            }
 
-        if (applied === 0) {
-            return { success: false, reason: 'limit' };
-        }
+            if (won) {
+                await endSession('won', newStats);
+                return { success: true, result: 'won' };
+            }
 
-        if (won) {
-            await endSession('won', newStats);
-            return { success: true, result: 'won' };
-        }
-
-        await saveStats(newStats);
-        return { success: true };
+            await saveStats(newStats);
+            return { success: true };
+        });
+        drinkQueue.current = run.catch(() => {});
+        return run;
     };
 
-    const drinkWater = () => applyDrinks([Date.now()]);
+    const drinkWater = () => {
+        if (statsRef.current.currentSession.status !== 'running') return;
+        return applyDrinks([Date.now()]);
+    };
 
     // Pulls tap timestamps queued by the notification "Drink" action.
     // Native clears the queue atomically, so the event / resume / load

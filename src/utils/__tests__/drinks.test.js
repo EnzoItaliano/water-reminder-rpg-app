@@ -14,6 +14,7 @@ function runningStats(sessionOverrides = {}) {
       status: 'running',
       isActive: true,
       startTime: base - 1000,
+      durationMinutes: 60,
       totalCups: 4,
       cupsDrank: 0,
       drinkHistory: [],
@@ -47,15 +48,17 @@ describe('applyDrinkTimestamps', () => {
     expect(result.stats.currentSession.cupsDrank).toBe(3);
   });
 
-  it('reports a win when the last cup is reached and drops extras', () => {
+  it('wins on the final cup and credits extras as water only', () => {
     const result = applyDrinkTimestamps(runningStats({ totalCups: 2 }), [
       base,
       base + 61_000,
       base + 122_000,
     ]);
-    expect(result.applied).toBe(2);
-    expect(result.rejected).toBe(1);
+    expect(result.applied).toBe(3);
+    expect(result.rejected).toBe(0);
     expect(result.won).toBe(true);
+    expect(result.stats.currentSession.cupsDrank).toBe(2);
+    expect(result.stats.totalWaterDrankML).toBe(750);
   });
 
   it('applies unsorted taps in chronological order', () => {
@@ -63,12 +66,40 @@ describe('applyDrinkTimestamps', () => {
     expect(result.stats.currentSession.drinkHistory).toEqual([base, base + 61_000]);
   });
 
-  it('ignores taps when the session is not running', () => {
+  it('credits water without touching the fight when the session is not running', () => {
     const stats = { ...runningStats(), currentSession: { ...defaultStats.currentSession, status: 'idle' } };
     const result = applyDrinkTimestamps(stats, [base]);
-    expect(result.applied).toBe(0);
-    expect(result.rejected).toBe(1);
+    expect(result.applied).toBe(1);
+    expect(result.won).toBe(false);
+    expect(result.stats).not.toBe(stats);
+    expect(result.stats.totalWaterDrankML).toBe(250);
+    expect(result.stats.dailyIntake[localDateKey(base)]).toBe(250);
+    expect(result.stats.currentSession.cupsDrank).toBe(stats.currentSession.cupsDrank);
+  });
+
+  it('credits taps after the session deadline as water only', () => {
+    const stats = runningStats({ startTime: base - 1000, durationMinutes: 60, totalCups: 4 });
+    const result = applyDrinkTimestamps(stats, [base - 1000 + 60 * 60000 + 5000]);
+    expect(result.applied).toBe(1);
+    expect(result.stats.currentSession.cupsDrank).toBe(0);
+    expect(result.won).toBe(false);
+    expect(result.stats.totalWaterDrankML).toBe(250);
+  });
+
+  it('replays a late-consumed final tap inside the window into a win', () => {
+    const stats = runningStats({ totalCups: 2, cupsDrank: 1, drinkHistory: [base] });
+    const result = applyDrinkTimestamps(stats, [base + 61_000]);
+    expect(result.won).toBe(true);
+    expect(result.stats.currentSession.cupsDrank).toBe(2);
+    expect(result.applied).toBe(1);
+  });
+
+  it('returns the same reference for an empty timestamps array', () => {
+    const stats = runningStats();
+    const result = applyDrinkTimestamps(stats, []);
     expect(result.stats).toBe(stats);
+    expect(result.applied).toBe(0);
+    expect(result.rejected).toBe(0);
   });
 
   it('does not mutate the input stats', () => {
